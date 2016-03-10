@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex nips2015"] 1457249476 "nips2015.aux" "nips2015.bbl" "nips2015" 1457571512
+["bibtex nips2015"] 1457581932 "nips2015.aux" "nips2015.bbl" "nips2015" 1457582346
   "/usr/local/texlive/2015/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "nips2015.aux" 1457249894 2396 e9bffa9b7c03b8cd36fc1cbbf5918f1e ""
+  "nips2015.aux" 1457582345 2485 7959236712ba251805c112d05d98ab4f ""
   "nips2015.bcf" 0 -1 0 ""
-  "rvdm.bib" 1457060060 23896 eb9fb4d2d7146c3c11e07d2436eb53c6 ""
+  "rvdm.bib" 1457581463 23896 eb9fb4d2d7146c3c11e07d2436eb53c6 ""
   (generated)
-  "nips2015.bbl"
   "nips2015.blg"
+  "nips2015.bbl"
 ["latex"] 1457061352 "nips2015.tex" "nips2015.dvi" "nips2015" 1457061352
   "./nips2015.out" 1457061352 232 51aedf6977afd46d771ef1525e1f5443 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
@@ -87,8 +87,8 @@
   "nips2015.dvi"
   "nips2015.aux"
   "nips2015.out"
-["pdflatex"] 1457249893 "nips2015.tex" "nips2015.pdf" "nips2015" 1457571512
-  "./nips2015.out" 1457249894 275 811ecb29b0d9ca6ff2fa40240cd11624 ""
+["pdflatex"] 1457582344 "nips2015.tex" "nips2015.pdf" "nips2015" 1457582346
+  "./nips2015.out" 1457582345 275 811ecb29b0d9ca6ff2fa40240cd11624 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2015/texmf-dist/fonts/tfm/adobe/courier/pcrr7t.tfm" 1136768653 960 379cc0019370a9e0208a0a3f949f847a ""
@@ -188,12 +188,12 @@
   "/usr/local/texlive/2015/texmf-var/web2c/pdftex/pdflatex.fmt" 1432479681 3849859 39a7d258195bde2394e244961601fbc5 ""
   "/usr/local/texlive/2015/texmf.cnf" 1432479636 577 0d611272082f3cdb8e80e09a3c69cf07 ""
   "nips15submit_e.sty" 1438109164 8804 cee4cb76ce9b6e282137062c87041468 ""
-  "nips2015.aux" 1457249894 2396 e9bffa9b7c03b8cd36fc1cbbf5918f1e ""
-  "nips2015.bbl" 1457249476 206 4f95c9fa7dff304a8391e78745f1eae5 "bibtex nips2015"
-  "nips2015.out" 1457249894 275 811ecb29b0d9ca6ff2fa40240cd11624 ""
-  "nips2015.tex" 1457249891 50557 8ddab71a8d0f9f636d4fc64413c2585a ""
+  "nips2015.aux" 1457582345 2485 7959236712ba251805c112d05d98ab4f ""
+  "nips2015.bbl" 1457581932 328 bc675424f69314e34ee8d31ce84ba8cb "bibtex nips2015"
+  "nips2015.out" 1457582345 275 811ecb29b0d9ca6ff2fa40240cd11624 ""
+  "nips2015.tex" 1457582341 51690 22172390be612c6421da2eeb50369484 ""
   (generated)
   "nips2015.log"
-  "nips2015.pdf"
   "nips2015.out"
   "nips2015.aux"
+  "nips2015.pdf"

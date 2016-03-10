@@ -154,7 +154,7 @@ The proof of this is obvious.
          &=& 2\l\|x- x'\r\|C\max_{\delta \in \left\{ -1,1 \right\}^m} \l\| \sum_{i=1}^n \delta_i \alpha_i q(s_i)   \r\| \\
          &\le& 2\l\|x- x'\r\|C \l\| \sum_{i=1}^n  \alpha_i q(s_i)   \r\| \\
          &=& 2\l\|x- x'\r\|C \l\| \int q(s) d\mu(s)   \r\| \\
-    \end{eqnarray*}<++>
+    \end{eqnarray*}
 \end{proof}
 \begin{prop}\label{pro:tens}
     If $n\sigma^{2d} \to 0$ then with probability going to one the following holds
@@ -260,6 +260,22 @@ The proof of this is obvious.
                         &=&  1.
                     \end{eqnarray*}
 	\end{proof}
+        The following is Corollary 6.15 From \cite{steinwart08}
+        \begin{lem}\label{lem:hsconc}
+        Let $\left( \Omega,\mathcal{A},P \right)$ be a probability space, $H$ be a separable Hilbert space $H$, and $B>0$. Furthermore, let $\xi_1,\ldots,\xi_n: \Omega \to H$ be independent $H$-valued random variables satisfying $\l\|\xi\r\|_\infty\le B$ for all $i = 1,\ldots,n$. Then, for all $\tau>0$, we ahve
+        \begin{eqnarray*}
+            P\left( \l\|\frac{1}{n}\sum_{i=1}^n\left( \xi_i - \mathbb{E} \left[ \xi_i \right] \right)\r\|_H \ge B \sqrt{\frac{2 \tau}{n}} + B \sqrt{\frac{1}{n}} + \frac{4B\tau}{3n} \right) \le e^\tau.
+        \end{eqnarray*}
+        Letting $\xi_i = \fm(X_i)\otimes \fm(X_i)$ we have that
+        \begin{eqnarray*}
+            B^2 
+            &=&  \l<\fm(X_i)\otimes \fm(X_i) , \fm(X_i)\otimes \fm(X_i)\r>\\
+            &=&  \l<\fm(X_i) , \fm(X_i)\r> \l<\fm(X_i) , \fm(X_i)\r>\\
+            &=&  \l\|\fm\r\|_\hsig^4\\
+            &=& C^2 \sigma^{2d},
+        \end{eqnarray*}
+        and so $B = C\sigma^d$
+        \end{lem}
 
 \end{proof}
 \section{Basics}
