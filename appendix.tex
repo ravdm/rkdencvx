@@ -1,0 +1,184 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips15submit_e,times}
+\usepackage{xr}
+\usepackage{hyperref}
+\usepackage{url}
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\usepackage{mathrsfs,bbm,euscript,dsfont,amsmath,amsfonts,amssymb,amsthm}
+\usepackage{wasysym,enumerate}
+\def\rn{\mathbb{R}}
+\def\cn{\mathbb{C}}
+\def\nn{\mathbb{N}}
+\def\dsig{{\mathcal{D}_\sigma}}
+\def\dsign{{\mathcal{D}_\sigma^n}}
+\def\ftiln{\widetilde{f}_\sigma^n}
+\def\fsign{f_\sigma^n}
+\def\l{\left}
+\def\r{\right}
+\def\fsigbar{\bar{f}_\sigma}
+\def\ftar{f_{tar}}
+\def\fobs{f_{obs}}
+\def\fcon{f_{con}}
+\def\dcon{\mathcal{D}_{con}}
+\def\dtar{\mathcal{D}_{tar}}
+\def\sF{\pazocal{F}}
+\def\sG{\pazocal{G}}
+\def\sM{\pazocal{M}}
+\def\sX{\pazocal{X}}
+\def\sD{\pazocal{D}}
+\def\sB{\pazocal{B}}
+\def\sV{\pazocal{V}}
+\def\sH{\pazocal{H}}
+\def\sP{\mathscr{P}}
+\def\sQ{\mathscr{Q}}
+\def\bX{\mathbf{X}}
+\def\bt{\mathbf{t}}
+\def\bc{\mathbf{c}}
+\def\hs{\mathscr{HS}}
+\def\pr{\mathbb{P}}
+\def\bs{{\overset{\circ}{B}}}
+\def\d2{\sD_2}
+\def\dd{\Delta\left( \sD \right)}
+\def\ind{\mathbbm{1}}
+\def\span{\operatorname{span}}
+\def\simiid{\overset{iid}{\sim}}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}{Corollary}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{defin}{Definition}
+\externaldocument{nips2015}
+
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{On The Identifiability of Mixture Models from Grouped Samples: Supplemental Material}
+
+
+\author{
+Robert A. Vandermeulen\\
+Department of EECS\\
+University of Michigan\\
+Ann Arbor, MI 48109 \\
+\texttt{rvdm@umich.edu} \\
+\And
+Clayton D. Scott \\
+Deparment of EECS\\
+Univeristy of Michigan\\
+Ann Arbor, MI 48109 \\
+\texttt{clayscot@umich.edu} \\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+
+\maketitle
+
+\appendix
+\begin{proof}[Proof of Lemma \ref{lem:represent}]
+	Because both representations are minimal it follows that $\alpha'_i \neq 0$ for all $i$ and $\mu_i' \neq \mu_j'$ for all $i \neq j$. From this we know $\sQ\left( \l\{\mu_i'\r\} \right) \neq 0$ for all $i$. Because $\sQ\left( \l\{\mu_i'\r\} \right) \neq 0$ for all $i$ it follows that for any $i$ there exists some $j$ such that $\mu_i' = \mu_j$. Let $\psi: \left[ r \right] \to \left[ r \right]$ be a function satisfying $\mu_i' = \mu_{\psi\left( i \right)}$. Because the elements $\mu_1,\cdots,\mu_r$ are also distinct $\psi$ must be injective and thus a permutation. Again from this distinctness we get that, for all $i$, $\sQ\left( \left\{ \mu_i' \right\}  \right)= \alpha'_i =\alpha_{\psi\left( i \right)}$ and we are done.
+\end{proof}
+\begin{proof}[Proof of Lemma \ref{lem:ident}]
+	We will proceed by contradiction. Let $\sP = \sum_{i=1}^l a_i \delta_{\mu_i}$ be $n$-identifiable, let $\sP' = \sum_{j=1}^r b_j \delta_{\nu_j}$ be a different mixture of measures with $r\le l$ and 
+\begin{eqnarray*}
+	\sum_{i=1}^l a_i \mu_i^{\times q} = \sum_{j=1}^r b_j \nu_j^{\times q}
+\end{eqnarray*}
+for some $q>n$. Let $A \in \sF^{\times n}$ be arbitrary. We have
+\begin{eqnarray*}
+	\sum_{i=1}^l a_i \mu_i^{\times q} &=& \sum_{j=1}^r b_j \nu_j^{\times q}\\
+	\Rightarrow \sum_{i=1}^l a_i \mu_i^{\times q}\left( A\times \Omega^{\times q-n} \right) &=& \sum_{j=1}^r b_j \nu_j^{\times q}\left( A\times \Omega^{\times q-n} \right)\\
+	\Rightarrow \sum_{i=1}^l a_i \mu_i^{\times n}\left( A \right) &=& \sum_{j=1}^r b_j \nu_j^{\times n}\left( A  \right).
+\end{eqnarray*}
+This implies that $\sP$ is not $n$-identifiable, a contradiction.
+\end{proof}
+\begin{proof}[Proof of Lemma \ref{lem:noident}]
+	Let a mixture of measures $\sP = \sum_{i=1}^l a_i \delta_{\mu_i}$ not be $n$-identifiable. It follows that there exists a different mixture of measures $\sP' = \sum_{j=1}^r b_j \delta_{\nu_j}$, with $r\le l$, such that
+\begin{eqnarray*}
+	\sum_{i=1}^l a_i \mu_i^{\times n} &=& \sum_{j=1}^r b_j \nu_j^{\times n}.
+\end{eqnarray*}
+Let $A \in \sF^{\times q}$ be arbitrary, we have
+\begin{eqnarray*}
+	\sum_{i=1}^l a_i \mu_i^{\times n}\left( A\times \Omega^{\times n-q} \right) &=& \sum_{j=1}^r b_j \nu_j^{\times n}\left( A\times \Omega^{\times n-q} \right)\\
+	\Rightarrow \sum_{i=1}^l a_i \mu_i^{\times q}\left( A  \right) &=& \sum_{j=1}^r b_j \nu_j^{\times q}\left( A \right)
+\end{eqnarray*}
+and therefore $\sP$ is not $q$-identifiable.
+\end{proof}
+
+
+\begin{proof}[Proof of Lemma \ref{lem:l2prod}]
+ Example 2.6.11 in \cite{kadison83} states that for any two $\sigma$-finite measure spaces $\left( S,\mathscr{S}, m \right), \left( S',\mathscr{S}', m' \right)$ there exists a unitary operator $U: L^2\left( S,\mathscr{S}, m \right) \otimes L^2 \left( S',\mathscr{S'}, m' \right) \to L^2\left( S\times S', \mathscr{S}\times \mathscr{S'}, m\times m' \right)$ such that, for all $f,g$,
+\begin{eqnarray*}
+	U(f\otimes g) = f(\cdot)g(\cdot).
+\end{eqnarray*}
+Because $\left( \Psi, \sG, \eta \right)$ is a $\sigma$-finite measure space it follows that $\left( \Psi^{\times m}, \sG^{\times m}, \eta^{\times m} \right)$ is a $\sigma$-finite measure space for all $m\in \mathbb{N}$. We will now proceed by induction. Clearly the lemma holds for $n=1$. Suppose the lemma holds for $n-1$. From the induction hypothesis we know that there exists a unitary transform $U_{n-1}: L^2\left( \Psi, \sG, \eta \right)^{\otimes n-1} \to L^2 \left( \Psi^{\times n-1} ,\sG ^{\times n-1}  , \eta^{n-1} \right)$ such that for all simple tensors$ f_1\otimes\cdots \otimes f_{n-1} \mapsto f_1(\cdot)\cdots f_{n-1}\left( \cdot \right)$. Combining $U_{n-1}$ with the identity map via Lemma \ref{lem:unitprod} we can construct a unitary operator $T_n: L^2\left( \Psi, \sG, \eta \right)^{\otimes n-1} \otimes L^2\left( \Psi, \sG, \eta \right) \to L^2 \left( \Psi^{\times n-1} ,\sG ^{\times n-1}  , \eta^{n-1} \right) \otimes L^2\left( \Psi, \sG, \eta \right)$, which maps $f_1\otimes\cdots\otimes f_{n-1}  \otimes f_n \mapsto f_1(\cdot)\cdots f_{n-1}(\cdot) \otimes f_n$
+
+ From the aforementioned example there exists a unitary transform $K_n:L^2\left( \Psi^{n-1},\sG^{\times n-1}, \eta^{n-1} \right)\otimes L^2\left( \Psi,\sG, \eta \right)\to L^2 \left( \Psi^{\times n-1} \times \Psi,\sG ^{\times n-1} \times \sG , \eta^{n-1}\times \eta\right)$ which maps $f\otimes f' \mapsto f\left( \cdot \right)f'\left( \cdot \right)$. Defining $U_n(\cdot)= K_n\left( T_n \left( \cdot \right) \right)$ yields our desired unitary transform.
+\end{proof}
+
+\begin{proof}[Proof of Lemma \ref{lem:unitprod}]
+	Proposition 2.6.12 in \cite{kadison83} states that there exists a continuous linear operator $\tilde{U}:H_1 \otimes \cdots \otimes H_n \to H_1' \otimes \cdots \otimes H_n'$ such that $\tilde{U}\left( h_1 \otimes\cdots \otimes h_n \right) = U_1(h_1) \otimes \cdots \otimes U_n(h_n)$ for all $h_1 \in H_1 ,\cdots, h_n \in H_n$. Let $\widehat{H}$ be the set of simple tensors in $H_1 \otimes \cdots \otimes H_n$ and $\widehat{H}'$ be the set of simple tensors in $H_1'\otimes \cdots \otimes H_n'$. Because $U_i$ is surjective for all $i$, clearly $\tilde{U}(\widehat{H}) = \widehat{H}'$. The linearity of $\tilde{U}$ implies that $\tilde{U}(\span(\widehat{H}))= \span(\widehat{H}')$. Because $\span(\widehat{H}')$ is dense in $H_1'\otimes \cdots \otimes H_n'$ the continuity of $\tilde{U}$ implies that $\tilde{U}(H_1\otimes\cdots \otimes H_n) = H_1'\otimes \cdots \otimes H_n'$ so $\tilde{U}$ is surjective. All that remains to be shown is that $\tilde{U}$ preserves the inner product. By the continuity of inner product we need only show that $\l<h, g\r>=\l<\tilde{U}(h), \tilde{U}(g)\r>$ for $h,g \in \span(\widehat{H})$. With this in mind let $h_1,\cdots, h_N,g_1,\cdots,g_M \in \widehat{H}$. We have the following
+\begin{eqnarray*}
+	\l<\tilde{U}\l(\sum_{i=1}^N h_i\r),\tilde{U}\l(\sum_{j=1}^M g_j\r) \r>
+	&=& \l<\sum_{i=1}^N \tilde{U}\l(h_i\r),\sum_{j=1}^M \tilde{U}\l(g_j\r) \r>\\
+	&=& \sum_{i=1}^N\sum_{j=1}^M\l< \tilde{U}\l(h_i\r), \tilde{U}\l(g_j\r) \r>\\
+	&=& \sum_{i=1}^N\sum_{j=1}^M\l< h_i, g_j \r>\\
+	&=& \l< \sum_{i=1}^Nh_i, \sum_{j=1}^M g_j \r>.
+\end{eqnarray*}
+We have now shown that $\tilde{U}$ is unitary which completes our proof.
+\end{proof}
+\begin{proof}[Proof of Lemma \ref{lem:linind}]
+	We will proceed by induction. For $n=2$ the lemma clearly holds. Suppose the lemma holds for $n-1$ and let $h_1,\cdots, h_n$ satisfy the assumptions in the lemma statement. Let $\alpha_1,\cdots, \alpha_n$ satisfy
+\begin{eqnarray}
+	\sum_{i=1}^n h_i^{\otimes n-1} \alpha_i = 0. \label{lisum}
+\end{eqnarray}
+To finish the proof we will show that $\alpha_1$ must be zero which can be generalized to any $\alpha_i$ without loss of generality.
+Let $H_1$ and $H_2$ be Hilbert spaces and let $\hs\left( H_1, H_2 \right)$ be the space of Hilbert-Schmidt operators from $H_1$ to $H_2$. Hilbert-Schmidt operators are a closed subspace of bounded linear operators. Proposition 2.6.9 in \cite{kadison83} states that for a pair of Hilbert spaces $H_1, H_2$ there exists an unitary operator $U:H_1 \otimes H_2 \to \hs\left( H_1,H_2 \right)$ such that $U(g_1\otimes g_2) = g_1 \l<g_2, \cdot\r>$. Applying this operator to (\ref{lisum}) we get
+\begin{eqnarray}
+	\sum_{i=1}^n h_i^{\otimes n-2}\l<h_i, \cdot \r> \alpha_i = 0. \label{lioper}
+\end{eqnarray}
+Because $h_1$ and $h_n$ are linearly independent we can choose $z$ such that $\l<h_1,z\r> \neq 0$ and $z\perp h_n$. Plugging $z$ into (\ref{lioper}) yields
+\begin{eqnarray*}
+	\sum_{i=1}^{n-1} h_i^{\otimes n-2}\l<h_i, z \r> \alpha_i = 0 
+\end{eqnarray*}
+and therefore $\alpha_1=0$ by the inductive hypothesis.
+\end{proof}
+
+\begin{proof}[Proof of Lemma \ref{lem:radprod}]
+	The fact that $f$ is positive and integrable implies that the map $S \mapsto \int_S f^{\times n}d\gamma^{\times n}$ is a bounded measure on $\l(\Psi^{\times n}, \sG^{\times n}\r)$ (see \cite{folland99} Exercise 2.12). 
+
+Let $R= R_1 \times\ldots\times R_n$ be a rectangle in $\sG^{\times n}$. Let $\mathds{1}_S$ be the indicator function for a set $S$. Integrating over $R$ and using Tonelli's theorem we get
+\begin{eqnarray*}
+	\int_R f^{\times n} d \gamma^{\times n}
+	&=& \int \mathds{1}_Rf^{\times n}d \gamma^{\times n}\\
+	&=& \int \mathds{1}_Rf^{\times n}d \gamma^{\times n}\\
+	&=& \int \l(\prod_{i=1}^n \mathds{1}_{R_i}(x_i)\r)\l(\prod_{j=1}^n f(x_j)\r)d \gamma^{\times n}\left( x_1,\cdots,x_n \right)\\
+	&=& \int\cdots\int \l(\prod_{i=1}^n \mathds{1}_{R_i}(x_i)\r)\l(\prod_{j=1}^n f(x_j)\r)d \gamma(x_1)\cdots d\gamma(x_n)\\
+	&=& \int\cdots\int \l(\prod_{i=1}^n \mathds{1}_{R_i}(x_i) f(x_i)\r)d \gamma(x_1)\cdots d\gamma(x_n)\\
+	&=&  \prod_{i=1}^n\l(\int \mathds{1}_{R_i}(x_i) f(x_i)d \gamma(x_i)\r)\\
+	&=&  \prod_{i=1}^n\eta(R_i)\\
+	&=&  \eta^{\times n}(R).
+\end{eqnarray*}
+Any product probability measure is uniquely determined by its measure over the rectangles (this is a consequence of Lemma 1.17 in \cite{fomp} and the definition of product $\sigma$-algebra) therefore, for all $B\in \sG^{n}$,
+\begin{eqnarray*}
+	\eta^{\times n}\left( B \right) = \int_B f^{\times n} d\gamma^{\times n}.
+\end{eqnarray*}
+
+\end{proof}
+\bibliographystyle{plain}
+\bibliography{rvdm}
+
+\end{document}

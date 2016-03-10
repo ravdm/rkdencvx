@@ -1,0 +1,820 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips15submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\usepackage{mathrsfs,bbm,euscript,dsfont,amsmath,amsfonts,amssymb,amsthm}
+\usepackage{wasysym,enumerate}
+
+%%HAAAAACK
+\hbadness=10000
+\hfuzz=100pt
+
+\def\hsig{{\mathcal{H}_\sigma}}
+
+\def\d2{{\mathcal{D}}}
+\def\dsig{{\mathcal{D}_\sigma}}
+\def\dsign{{\mathcal{D}_{\sigma,n}}}
+\def\ksig{{k_\sigma}}
+\def\kde{{\bar{f}_{\sigma,n}}} %empircal KDE
+\def\kdem{{\bar{f}_{\sigma,n}^m}} %empircal RKDE afeter m iteration
+\def\gkde{{\bar{f}_\sigma}} %General KDE 
+\def\gkdem{{\bar{f}^m_\sigma}} %General RKDE 
+\def\pn{\l\|\Phi_\sigma\r\|_{\mathcal{H}_\sigma}} %% Feature map norm
+\def\fm{{\Phi_\sigma}} %%Feature Map
+\def\cip{\,{\buildrel p \over \rightarrow}\,}
+\def\vpsig{{\varphi_\sigma}}
+\def\irwl{{R_{\sigma,n}}}
+\def\irwlm{{R_{\sigma,n}^{m}}}
+\def\girwl{{R_{\sigma}}}
+\def\girwlm{{R_{\sigma}^m}}
+\def\grkdem{{f_{\sigma}^m}}
+\def\rfm{{f^m}}
+
+\def\rn{\mathbb{R}}
+\def\cn{\mathbb{C}}
+\def\nn{\mathbb{N}}
+\def\ftiln{\widetilde{f}_\sigma^n}
+\def\fsign{f_\sigma^n}
+\def\fsigm{f_\sigma^m}
+\def\l{\left}
+\def\r{\right}
+\def\fsigbar{\bar{f}_\sigma}
+\def\ftar{f_{tar}}
+\def\fobs{f_{obs}}
+\def\fcon{f_{con}}
+\def\dcon{\mathcal{D}_{con}}
+\def\dtar{\mathcal{D}_{tar}}
+\def\sF{\pazocal{F}}
+\def\sG{\pazocal{G}}
+\def\sM{\pazocal{M}}
+\def\sX{\pazocal{X}}
+\def\sD{\pazocal{D}}
+\def\sB{\pazocal{B}}
+\def\sV{\pazocal{V}}
+\def\sH{\pazocal{H}}
+\def\sP{\mathscr{P}}
+\def\sQ{\mathscr{Q}}
+\def\bX{\mathbf{X}}
+\def\bt{\mathbf{t}}
+\def\bc{\mathbf{c}}
+\def\hs{\mathscr{HS}}
+\def\pr{\mathbb{P}}
+\def\bs{{\overset{\circ}{B}}}
+\def\dd{\Delta\left( \sD \right)}
+\def\ind{\mathbbm{1}}
+\def\span{\operatorname{span}}
+\def\simiid{\overset{iid}{\sim}}
+\def\ld{L^2\left( \rn^d \right)}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}{Corollary}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{defin}{Definition}
+
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{On Consistency of Non-convex RKDES}
+
+
+\author{
+	Robert A. Vandermeulen\\
+	Department of EECS\\
+	University of Michigan\\
+	Ann Arbor, MI 48109 \\
+	\texttt{rvdm@umich.edu} \\
+	\And
+	Clayton D. Scott \\
+	Deparment of EECS\\
+	Univeristy of Michigan\\
+	Ann Arbor, MI 48109 \\
+	\texttt{clayscot@umich.edu} \\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+\DeclareMathOperator{\conv}{conv}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+\maketitle
+\section{In progress}
+\begin{defin}
+    Let $H$ be a Hilbert space and $S\subset H$. We call $S$ {\em postive} if, for all $s,s' \in S$, $\l<s,s'\r>\ge 0$.
+\end{defin}
+\begin{prop}
+    If $S$ is a positive set then $\conv S$ is also a positive set. 
+\end{prop}
+The proof of this is obvious.
+\begin{prop}
+    If $S$ is a positive set then $\overline{\conv S}$ is a positive set.
+\end{prop}
+\begin{proof}
+    Let $s,s' \in \overline{\conv S}$ and $\left( s_i \right)_{i=1}^\infty, \left( s_i' \right)_{i=1}^\infty$ such that $s_i \to s$ and $s_i' \to s'$. This will be easy.
+\end{proof}
+\begin{prop}\label{pro:big}
+    Let $S,T$ be positive sets and $\mu$ a probability measure composed of a finite number of atoms,ie $\mu= \sum_{i=1}^m \alpha_i \delta_{s_i}$ with $\l\|s_i\r\|= C$ on $S$ and $q:S\to T$ and $x,x' \in S$. Then
+    \begin{eqnarray*}
+        \l\| \int q(s) \l[\left(2 \l<x,s\r> - \l\|x\r\|^2  \right)^+ - \left( 2\l<x',s\r> - \l\|x'\r\|^2 \right)^+ \r] d\mu(s) \r\|\\
+        \le \l( \l| \l\|x\r\|^2 - \l\|x'\r\|^2 \r| + 2C\l\|x - x'\r\|\r) \l\|\int q(s) d\mu(s)\r\|.
+    \end{eqnarray*}
+\end{prop}
+\begin{proof}[Proof of Proposition \ref{pro:big}]
+    We have
+    \begin{eqnarray*}
+        \l\| \int q(s) \l[\left(2 \l<x,s\r> - \l\|x\r\|^2  \right)^+ - \left( 2\l<x',s\r> - \l\|x'\r\|^2 \right)^+ \r] d\mu(s) \r\|\\
+        \le \l\| \int q(s) \l|2 \l<x,s\r> - \l\|x\r\|^2  -  2\l<x',s\r> + \l\|x'\r\|^2 \r| d\mu(s) \r\|\\
+        \le \l\| \int q(s) \l|2 \l<x,s\r> -  2\l<x',s\r> \r| d\mu(s) \r\|\\
+        + \l\| \int q(s) \l|  \l\|x\r\|^2  - \l\|x'\r\|^2 \r| d\mu(s) \r\|.
+    \end{eqnarray*}
+    For the second summand we have
+    \begin{eqnarray*}
+        \l\| \int q(s) \l|  \l\|x\r\|^2  - \l\|x'\r\|^2 \r| d\mu(s) \r\|
+        &=&\l|  \l\|x\r\|^2  - \l\|x'\r\|^2 \r|\l\| \int q(s)  d\mu(s) \r\|.
+    \end{eqnarray*}
+    And for the first summand we have
+    \begin{eqnarray*}
+         \l\| \int q(s) \l|2 \l<x,s\r> -  2\l<x',s\r> \r| d\mu(s) \r\|
+         &=& \l\| \sum_{i=1}^n \alpha_i q(s_i) \l|2 \l<x,s_i\r> -  2\l<x',s_i\r> \r|  \r\|\\
+         &=& \max_{\delta \in \left\{ -1,1 \right\}^m} \l\| \sum_{i=1}^n \delta_i \alpha_i q(s_i) \l[2 \l<x,s_i\r> -  2\l<x',s_i\r> \r]\r\| \\
+         &=& 2\max_{\delta \in \left\{ -1,1 \right\}^m} \l\| \sum_{i=1}^n \delta_i \alpha_i q(s_i)  \l<x- x',s_i\r> \r\| \\
+         &\le& 2\max_{\delta \in \left\{ -1,1 \right\}^m} \l\| \sum_{i=1}^n \delta_i \alpha_i q(s_i)  \l\|x- x'\r\|\l\|s_i\r\| \r\| \\
+         &=& 2\l\|x- x'\r\|C\max_{\delta \in \left\{ -1,1 \right\}^m} \l\| \sum_{i=1}^n \delta_i \alpha_i q(s_i)   \r\| \\
+         &\le& 2\l\|x- x'\r\|C \l\| \sum_{i=1}^n  \alpha_i q(s_i)   \r\| \\
+         &=& 2\l\|x- x'\r\|C \l\| \int q(s) d\mu(s)   \r\| \\
+    \end{eqnarray*}<++>
+\end{proof}
+\begin{prop}\label{pro:tens}
+    If $n\sigma^{2d} \to 0$ then with probability going to one the following holds
+    \begin{equation*}
+        \max_{\delta\in \left\{ -1,1 \right\}^ n} \l\| \frac{1}{n}\sum_{i=1}^n \delta_i \fm(X_i)\l<\fm(X_i),\cdot\r>\r\|_{op} < 2\l\|f\r\|_\infty.
+    \end{equation*}
+\end{prop}
+\begin{proof}[Proof of Proposition \ref{pro:tens}] 
+    Let $T_{\sigma,n}$ be an operator which maximizes the previous epxression. First we will show that $T_{\sigma,n}$ is Hermetian. Let $g,h \in \hsig$ and $\delta \in \left\{ -1,1 \right\}^n$ be arbitrary,
+        \begin{eqnarray*}
+             \l<\frac{1}{n}\sum_{i=1}^n \delta_i \fm(X_i)\l<\fm(X_i),g\r>,h\r>
+            &=& \frac{1}{n}\sum_{i=1}^n\delta_i\l<  \fm(X_i)\l<\fm(X_i),g\r>,h\r>\\
+            &=& \frac{1}{n}\sum_{i=1}^n\delta_i  \l<\fm(X_i),h\r> \l<\fm(X_i),g\r>\\
+            &=& \frac{1}{n}\sum_{i=1}^n\delta_i  \l<\l<\fm(X_i),g\r>\fm(X_i),h\r> \\
+            &=& \frac{1}{n}\sum_{i=1}^n\delta_i\l<  \fm(X_i)\l<\fm(X_i),h\r>,g\r>\\
+            &=& \l<\frac{1}{n}\sum_{i=1}^n \delta_i \fm(X_i)\l<\fm(X_i),h\r>,g\r>
+        \end{eqnarray*}
+        Because $T_{\sigma,n}$ is Hermetian, we have that $\l\|T_{\sigma,n}\r\|_{op} = \max_{v\in \hsig: \l\|v\r\| = 1}\l<Tv,v\r>$ (Proposition 7.36 in \cite{fabian01}). Using this we have
+	\begin{eqnarray*}
+            \l\|T_{\sigma,n}\r\|_{op}
+                &=&  \max_{\delta\in \left\{ -1,1 \right\}^ n}\l\| \frac{1}{n} \sum_{i=1}^m \delta_i\fm\left( X_i \right)\l<\fm(X_i),\cdot \r> \r\|_{op}\\
+                &=&  \max_{v:\l\|v\r\|= 1} \max_{\delta\in \left\{ -1,1 \right\}^ n}\l|\l<v,\frac{1}{n}\sum_{i=1}^n \delta_i \fm(X_i) \l<\fm(X_i),v\r>\r>\r| \\
+		&=& \max_{v:\l\|v\r\|= 1} \max_{\delta\in \left\{ -1,1 \right\}^ n}\l|\sum \frac{1}{n}\delta_i \l<v, \fm(X_i)\l<\fm(X_i),v\r>\r>\r|\\
+		&=& \max_{v:\l\|v\r\|= 1}\max_{\delta\in \left\{ -1,1 \right\}^ n} \l|\sum \frac{1}{n}\delta_i  \l<\fm(X_i),v\r>^2\r|\\
+		&=& \max_{v:\l\|v\r\|= 1} \sum \frac{1}{n}\l<\fm(X_i),v\r>^2\\
+		&=&  \max_{v:\l\|v\r\|= 1} \l|\l<v,  \frac{1}{n} \sum_{i=1}^m \fm\left( X_i \right)\l<\fm(X_i),v \r> \r>\r|\\
+                &=&  \l\| \frac{1}{n} \sum_{i=1}^m \fm\left( X_i \right)\l<\fm(X_i),\cdot \r> \r\|_{op}.\\
+	\end{eqnarray*}
+        We will simply let $T_{\sigma,n}$ be the operator in the last line. We will now consider the expected value of $T_{\sigma,n}$ as a Boncher integral. First we must show that this is in fact Bochner integrable. First we will bound  $\l\|\fm(x)\l<\fm(x),\cdot\r>\r\|_{op}$ for arbitary $x$. We have
+        \begin{eqnarray*}
+            \l\|\fm(x)\l<\fm(x),\cdot\r>\r\|_{op}
+            &=& \max_{v\in \hsig: \l\|v\r\| = 1}\l\|\fm(x)\l<\fm(x),v\r>\r\|_\hsig\\
+            &\le& \max_{v\in \hsig: \l\|v\r\| = 1}\l\|\fm(x)\r\| \l\|\fm(x)\r\| \l\|v\r\|\\
+            &=& \l\|\fm\r\|_\hsig^2.
+        \end{eqnarray*}
+        Now we can show that the expected value of $T_{\sigma,n}$ is Bochner integrable,
+        \begin{eqnarray*}
+            \mathbb{E}_{X_1,\ldots X_n \simiid f}\left[\l\| T_{\sigma,n}\r\|  \right]
+            &=& \mathbb{E}_{X_1,\ldots X_n \simiid f}\left[\l\|\frac{1}{n}\sum_{i=1}^m \fm\left( X_i \right)\l<\fm(X_i),\cdot \r>\r\|_{op}\r]\\
+            &\le& \mathbb{E}_{X_1,\ldots X_n \simiid f}\left[\frac{1}{n}\sum_{i=1}^m \l\|\fm\left( X_i \right)\l<\fm(X_i),\cdot \r>\r\|_{op}\r]\\
+            &\le& \mathbb{E}_{X_1,\ldots X_n \simiid f}\left[\frac{1}{n}\sum_{i=1}^m \l\|\fm\r\|_\hsig^2\r]\\
+            &=& \mathbb{E}_{X_1,\ldots X_n \simiid f}\left[ \l\|\fm\r\|_\hsig^2\r]\\
+            &=& \l\|\fm\r\|_\hsig^2.
+        \end{eqnarray*}
+        Evaluating the Bocher integral of $T_{\sigma,n}$ we get
+	\begin{eqnarray*}
+		\l\|  \mathbb{E}\left[ \frac{1}{n} \sum_{i=1}^m \fm\left( X_i \right)\l<\fm(X_i),\cdot \r>\r]\r\|_{op} = \l\| \int f(x) \fm(x) \l<\fm(x),\cdot\r>\r\|_{op}.
+	\end{eqnarray*}
+        We will call the operator in the last line $T_\sigma$.
+	$T_\sigma$ is also Hermetian: let $g,h\in \hsig$ be arbitrary,
+	\begin{eqnarray*}
+		\l<T_\sigma g,h\r>
+		&=&  \l<\int f(x) \fm(x) \l<\fm(x),g\r>dx ,h\r>\\ 
+		&=&  \int f(x)\l< \fm(x) \l<\fm(x),g\r> ,h\r>dx\\ 
+		&=&  \int f(x) g(x) h(x) dx\\ 
+		&=&  \l<\int f(x) \fm(x) \l<\fm(x),h\r>dx ,g\r>\\ 
+		&=& \l<g,T_\sigma h\r>.
+	\end{eqnarray*}
+	From this we have have that $\l\|T_\sigma\r\| = \max_{g:\l\|g\r\|= 1} \l<Tg,g\r>$. Note that from this we have
+	\begin{eqnarray*}
+            \l\|T\r\|_{op}
+		&=& \l<T_\sigma g,g\r>\\
+		&=&  \int f(x)g^2(x) dx\\
+		&\le&  \l\|f \r\|_\infty \int   g^2(x) dx.\\
+	\end{eqnarray*}
+        we have that $\l\|T_\sigma \r\|_{op} \le \l\|f\r\|_\infty \l\| \int \fm(x) \l<\fm(x),\cdot\r> dx\r\|_{op}$. We denote the operator on the right as $S_\sigma$. We will now find the operator norm of $S_\sigma$.
+	\begin{lem} \label{lem:opbnd}
+		$\l\|S_\sigma\r\| \le 1$.
+	\end{lem}
+	\begin{proof}[Proof of Lemma \ref{lem:opbnd}]
+                First observe that, for any L2 THING, NEED TO BE DELICATE AND FINISH L2 
+
+		Let $x,y \in \rn^d$ be arbitrary, we have
+		Let $g \in \span\left( \left\{ \fm(x): x \in \rn^d \right\} \right)$, with $g = \sum_{i=1}^n a_i \fm(x_i)$. We have that 
+		\begin{eqnarray*}
+			\l\|g \r\|_\hsig^2
+			&=& \sum_{i,j} a_i a_j \l<\fm(x_i), \fm(x_j)\r>\\
+			&=& \sum_{i,j} a_i a_j k_\sigma\left(x_i,x_j  \right)\\
+			&=& \sum_{i,j} a_i a_j k_{\frac{\sigma}{\sqrt{2}}} \ast k_{\frac{\sigma}{\sqrt{2}}}(x_i,\cdot) ( x_j)\\
+			&=& \sum_{i,j} a_i a_j \l<k_{\frac{\sigma}{\sqrt{2}}}(x_i,\cdot), k_{\frac{\sigma}{\sqrt{2}}}(x_j,\cdot) \r>\\
+			&=& \l\| \sum_{i=1}^n a_i k_{\frac{\sigma}{\sqrt{2}}}(x_i, \cdot)\r\|^2 \\
+                        &\ge& \l\| \sum_i a_i k_{\sigma\sqrt{\frac{1}{2}}}\left( x_i,\cdot \right) \ast k_{\frac{\sigma}{\sqrt{2}}} \r\|^2\\
+                        &=& \l\| \sum_i a_i k_{\sigma}\left( x_i,\cdot \right)  \r\|^2\\
+                        &=& \l\|g\r\|^2
+                    \end{eqnarray*}
+                    where the inequality follows form Young's Inequality.
+                    Let $g \in \hsig$ and let $g_1,g_2,\ldots \in \span\left( \left\{ \fm(x): x\in \rn^d \right\} \right)$ such that $g_i \to g$. We have that $g_i$ is a Cauchy sequence in $\hsig$ and since $\l\|g_i - g_j\r\|_{L^2} \le \l\|g_i - g_j \r\|_\hsig$ it follows that it is also a Cauchy sequence in $L^2$. Let this sequence converge to $g^*$. We also have that
+                    \begin{eqnarray*}
+                        \l\|g - g_i\r\|_\infty
+                        &=& \max_x \l|g(x) - g_i(x)\r|\\
+                        &=& \max_x \l|\l<g,\fm(x)\r> - \l<g_i,\fm(x)\r>\r|\\
+                        &=& \max_x \l|\l<g-g_i,\fm(x)\r>\r|\\
+                        &\le&  \l\|g-g_i\r\|_\hsig \l\|\fm\r\|_\hsig
+                    \end{eqnarray*}
+                    so $g_i$ converges to $g$ uniformly. We will now show that $g=g^*$ almost everywhere. Suppose that this weren't true and there existed a set $A$ of positive measure and $\varepsilon>0$ such that $\l|g(a) - g^*(a)\r|>\varepsilon$ for all $a\in A$. Then it would follow that $\l\|g^* - g_i\r\|_2 \not\to 0$, a contradiction thus we have that $g = g^*$ and $\l\|g_i - g\r\|_2 \to 0$.
+                    
+                    Since $\l\| g_i \r\|_2 \to \l\|g\r\|_2, \l\|g_i\r\|_\hsig \to \l\|g\r\|_\hsig$ and $\l\|g_i\r\|_2 \le \l\|g_i\r\|_\hsig$ it follows that $\l\|g\r\|_2 \le \l\|g\r\|_\hsig$. Thus for all $g\in \hsig, \l\|g\r\|_2 \le \l\|g\r\|_\hsig$. To finish up,
+                    \begin{eqnarray*}
+                        \l\|S\r\|
+                        &=& \max_{g\in \hsig: \l\|g\r\|_\hsig = 1} \l<g,Sg\r>\\
+                        &=& \max_{g\in \hsig: \l\|g\r\|_\hsig = 1} \l\|g\r\|_2\\
+                        &\le& \max_{g\in \hsig: \l\|g\r\|_\hsig = 1} \l\|g\r\|_\hsig\\
+                        &=&  1.
+                    \end{eqnarray*}
+	\end{proof}
+
+\end{proof}
+\section{Basics}
+$L^q$ will always refer to the standard space induced by the Lebesgue measure.
+Let $\rn_+$ be the set of nonnegative reals. Let $\left( \cdot \right)^+$ denote the postive component of whatever is in the parenthesis.
+All integrals and spaces will be defined with respect to the $d$-dimensional Lebesgue measure. Let $f \in L^1\left(  \rn^d\right) \cap L^\infty\left(  \rn^d\right)$ be a pdf and $X_1,\dots, X_n$ be iid samples from $f$.
+
+Let $\ksig\l(x,x'\r)$ be a radial smoothing kernel of the form $\ksig\l(x,x'\r) = \sigma^{-d} q\l(\l\|x-x'\r\|_2/\sigma\r)$ for some function $q\ge0$ such that $q\l(\l\|\cdot\r\|_2\r)$ is a pdf on $\rn^d$. Then
+\begin{eqnarray*}
+	\kde := \frac{1}{n}\sum_{i=1}^n\ksig\l(\cdot,X_i\r)
+\end{eqnarray*}
+is the standard KDE.
+We will assume $\ksig$ corresponds to a PSD kernel so that $\ksig$ is an element of a RKHS with feature map $\fm$.
+Furthermore we will define
+\begin{eqnarray*}
+	\gkde = \int_{\rn^d} \fm\left( x \right) f\left( x \right) dx.
+\end{eqnarray*}
+Let $\d2$ be the space of square-integrable pdfs on $\rn^d$.
+
+Let 
+\begin{eqnarray*}
+	\dsig =\left\{\int \Phi_\sigma(x) d\nu(x) \Big| \nu \textrm{ is a probability measure}  \right\}.
+\end{eqnarray*}
+Let 
+\begin{eqnarray*}
+	\dsign = \left\{ \sum_{i=1}^n \fm\left( X_i \right)w_i : \sum_i w_i = 1, w_i\ge0 \forall i  \right\}.
+\end{eqnarray*}
+Note that this is not necessarily well defined as it may be $0/0$. The $\frac{1}{n}$ coefficients are unneccary for the defninition but will be handy when performing analysis.
+
+Let $R:\d2 \to \d2$ be defined as 
+\begin{eqnarray*}
+	R(g)(x) &=& \frac{N(g)(x)}{D(g)}\\
+	N(g)(x) &=&f(x) \left( 2g(x) - \l\|g\r\|^2_{L^2\left( \rn^d \right)} \right)^+\\
+	D(g) &=&\int f(y) \left( 2g(y) - \l\|g\r\|^2_{L^2\left( \rn^d \right)}\right)^+ dy.
+\end{eqnarray*}
+For $m\ge 0 $ we define the following
+\begin{eqnarray*}
+	R^m(g) &=& \underbrace{R(R(\cdots (R}_{m \text{ times}}(g)) \cdots )) \\
+\end{eqnarray*}
+
+
+We define $\girwl:\dsig \to \dsig$ as
+
+\begin{eqnarray*}
+	\girwl\left( g \right) &=& \frac{N_\sigma(g)}{D_\sigma(g)}\\
+	D_\sigma(g) &=& \int f\left( x \right) \fm\left( x \right) \left( 2g\left( x \right) - \l\|g\r\|_\hsig^2 \right)^+ dx \\
+	N_\sigma(g) &=& \int f\left( y \right)  \left( 2g\left( y \right) - \l\|g\r\|_\hsig^2 \right)^+ dy
+\end{eqnarray*}
+
+For $m\ge 0 $ we define the following
+\begin{eqnarray*}
+	R_\sigma^m(g) &=& \underbrace{R_\sigma(R_\sigma(\cdots (R_\sigma}_{m \text{ times}}(g)) \cdots )) \\
+\end{eqnarray*}
+
+Define $\irwl: \dsig \to \dsig$
+\begin{eqnarray} \label{eqn:irwl}
+	\irwl\left( g \right) &=& \frac{N_{\sigma,n}\left( g \right)}{D_{\sigma,n}(g)}\\
+	N_{\sigma,n}(g) &=& \frac{1}{n}\sum_{i=1}^n \fm\left( X_i \right) \left( 2g\left( X_i \right) - \l\|g\r\|_\hsig^2 \right)^+\\
+	D_{\sigma,n}\left( g \right) &=& \frac{1}{n}\sum_{j=1}^n  \left( 2g\left( X_j \right) - \l\|g\r\|_\hsig^2 \right)^+.
+\end{eqnarray}
+
+\begin{eqnarray*}
+	\l\|f\r\|^2_{L^2} = \l\|ff\r\|_{L^1}\le \l\|f\r\|_{L^1} \l\|f\r\|_{L^\infty} = \l\|f\r\|_{L^\infty}.
+\end{eqnarray*}
+
+We will define $R^0$ for whatever flavor of $R$ to just be the identity function.  FIX AT SOME POINT!
+
+\section{Main Results}
+
+\begin{thm}\label{thm:main}
+	For all $m\ge 0$, $\l\|\irwlm\left(\kde  \right) - R^m\left( f \right) \r\|\cip 0$.
+\end{thm}
+\begin{proof}
+	By repeated application of the triangle inequality, we know that
+	\begin{eqnarray*}
+		\l\|\irwlm\left(\kde  \right) - R^m\left( f \right) \r\|
+	\end{eqnarray*}
+	is less than or equal to
+	\begin{eqnarray*}
+		 \l\|\irwlm\left( \kde \right) - \irwlm\left( \gkde \right) \r\| + \l\| \irwlm\left( \gkde \right)- \girwlm\left( \gkde \right)  \r\| + \l\|\girwlm\left( \gkde \right) - R^m \left( f \right)\r\|.
+	\end{eqnarray*}
+	We will show all the summands in the previous expression converge to zero in probability.
+\end{proof}
+
+Though this may seem contrived it will be convenient if, for the remainer of the paper we define
+\begin{eqnarray*}
+	N_\sigma\left( R_{\sigma}^{-1}\left( \gkde \right) \right) \triangleq \gkde\\
+	N\left( R^{-1}\left( f \right) \right) \triangleq f\\
+	D_\sigma\left( R_{\sigma}^{-1}\left( \gkde \right) \right) \triangleq 1\\
+	D\left( R^{-1}\left( \gkde \right) \right) \triangleq 1
+\end{eqnarray*}
+
+\begin{lem}\label{lem:gl2cvg}
+	For all $m\ge0$, we have 
+	\begin{enumerate}
+		\item $\l\| \girwlm \left( \gkde \right) - R^m\left( f \right)\r\|_{L^2} \to 0  $
+		\item $\l|\l\|R^m(f)\r\|_{L^2} - \l\|R_\sigma^m \left( \gkde \right)\r\|_\hsig \r| \to 0$
+		\item $\l\| N_\sigma\left( R_\sigma^{m-1}\left( \gkde \right) \right) - N\l(R^{m-1}\left( f \right)\r)\r\|_{L^2} \to 0$
+		\item $\l| D_\sigma\left( R_\sigma^{m-1}\left( \gkde \right) \right) - D\l(R^{m-1}\left( f \right)\r)\r|\to 0$
+	\end{enumerate}
+	as  $\sigma \to 0$.
+\end{lem}
+\begin{proof}[Proof of Lemma \ref{lem:gl2cvg}.]
+	We will proceed by induction. The base case $m=0$ clearly holds for (1), (3), and (4). For (2) we have
+	\begin{eqnarray*}
+		\l\|\gkde\r\|_\hsig^2 &=& \l<\int f(x) \fm(x) dx, \int f(y) \fm(y) dy\r>_\hsig \\
+				      &=& \l<\int f(x) \fm(x) dx, \int f(y) \fm(y) dy\r>_\hsig \\
+			&=& \int \int f(x) f(y) \ksig\left( x,y \right)dxdy\\
+		 &=& \int \int f(x) \left( f\ast \ksig \right)(x) dx\\
+		 &=& \l<f,f\ast \ksig\r>_{L^2}
+	\end{eqnarray*}
+	where the last line goes to $0$ due to Proposition \ref{prop:convcvg}.	
+
+	For the induction step suppose that the Lemma holds for $m$. Let $\girwlm\left( \gkde \right) = \grkdem$ and $R^m\left( f \right) = \rfm$
+	Since $D\left( f^m \right)$ and $N\left( f^m \right)$ are fixed as $\sigma$ varies, to (1) $\l\|R_{\sigma}^m \left( \gkde \right) - R^m\left( f \right)\r\|_2 \to 0$ it is sufficient to show (4) $\l|D_\sigma\left( \fsigm \right) - D \left( f^m \right) \r| \to 0$ and (3) $\l\| N_\sigma^m\left( \gkde \right) - N^m \left( f \right)\r\|_2 \to 0$.
+	First We will take care of (3).
+	\begin{eqnarray*}
+		\l\|N_\sigma\left( \fsigm \right) - N \left( f^m \right) \r\|_2\\
+		= \l\|\int \fm\left( x \right)f(x) \left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ dx - f(\cdot) \left( 2\rfm\left( \cdot \right) - \l\|\rfm \r\|_{L^2}^2 \right)^+\r\|_{L^2}\\
+		\le 
+		\l\|\int \fm\left( x \right)f(x) \left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ dx -\int \fm\left( y \right)f(y) \left( 2\rfm\left( y \right) - \l\| \rfm \r\|_{L^2}^2 \right)^+ dy \r\|_{L^2}\\
+		+ \l\|\int \fm\left( x \right)f(x) \left( 2\rfm\left( x \right) - \l\| \rfm \r\|_{L^2}^2 \right)^+ dx - {f(\cdot) \left( 2\rfm\left( \cdot \right) - \l\|\rfm \r\|_{L^2}^2 \right)^+}\r\|_{L^2}.
+	\end{eqnarray*}
+	The second summand goes to zero by standard kern to zero (Folland). Now we can take care of the first summand. Using Corollaries \ref{cor:hilbabs} and \ref{cor:hilbbigger}, we can do the following.
+	\begin{eqnarray*}
+		\l\|\int \fm\left( x \right)f(x) \left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ dx -\int \fm\left( y \right)f(y) \left( 2\rfm\left( y \right) - \l\| \rfm \r\|_{L^2}^2 \right)^+ dy \r\|_{L^2}\\
+		= \l\|\int \fm\left( x \right)f(x) \l[\left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ -  \left( 2\rfm\left( x \right) + \l\| \rfm \r\|_{L^2}^2 \right)^+ \r]dx \r\|_{L^2}\\
+		\le \l\|\int \fm\left( x \right)f(x) \l| 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2  -   2\rfm\left( x \right) + \l\| \rfm \r\|_{L^2}^2  \r|dx \r\|_{L^2}\\
+		\le \l\|\int \fm\left( x \right)f(x) \l[ \l| 2\grkdem\left( x \right) - 2\rfm\left( x \right)   \r| + \l| \l\| \grkdem \r\|_{\hsig}^2 - \l\| \rfm \r\|_{L^2}^2\r|\r]dx \r\|_{L^2}\\
+		\le \l\|\int \fm\left( x \right)f(x)  \l| 2\grkdem\left( x \right) - 2\rfm\left( x \right)   \r| dx \r\|_{L^2}\\
+		\ldots + \l\|\int \fm\left( x \right)f(x)\l| \l\| \grkdem \r\|_{\hsig}^2 - \l\| \rfm \r\|_{L^2}^2\r|dx \r\|_{L^2}.
+	\end{eqnarray*}
+	The second summand is easy to dispatch
+	\begin{eqnarray*}
+		\l\|\int \fm\left( x \right)f(x)\l| \l\| \grkdem \r\|_{\hsig}^2 - \l\| \rfm \r\|_{L^2}^2\r|dx \r\|_{L^2}
+		&\le& \l\|\int \fm\left( x \right)f(x)dx \r\|_{L^2}\l| \l\| \grkdem \r\|_{\hsig}^2 - \l\| \rfm \r\|_{L^2}^2\r|,
+	\end{eqnarray*}
+	we have already shown that the left factor goes to $\l\|f\r\|_{L^2}$ and the right factor goes to zero by the inductive hypothesis.
+	Returning to the first summand we have, by Young's inequality (and some other stuff )\dots
+	\begin{eqnarray*}
+		\l\|\int \fm\left( x \right)f(x)  \l| 2\grkdem\left( x \right) - 2\rfm\left( x \right)   \r| dx \r\|_{L^2}
+		&=& \l\| \ksig \ast \l[f  \l| 2\grkdem - 2\rfm   \r| \r] \r\|_{L^2}\\
+		&=& \l\| f  \l| 2\grkdem - 2\rfm   \r| \r\|_{L^2}\\
+		&=& \l\|f\r\|_{L^\infty}\l\| \l| 2\grkdem - 2\rfm   \r| \r\|_{L^2}.
+	\end{eqnarray*}
+	which goes to zero by the inductive hypothesis.
+
+        Now to take care of (4) we have
+        \begin{eqnarray*}
+            \l| D_\sigma\left( R_\sigma^{m}\left( \gkde \right) \right) - D\l(R^{m}\left( f \right)\r)\r|\\
+		=\l|\int f(x) \left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ dx -\int f(y) \left( 2\rfm\left( y \right) - \l\| \rfm \r\|_{L^2}^2 \right)^+ dy \r|\\
+                = \l|\int f(x) \l[\left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right)^+ - \left( 2\rfm\left( x \right) - \l\| \rfm \r\|_{L^2}^2 \right)^+\r] dx \r|\\
+            \le\l|\int f(x) \l|\left( 2\grkdem\left( x \right) - \l\| \grkdem\r\|_{\hsig}^2 \right) - \left( 2\rfm\left( x \right) - \l\| \rfm \r\|_{L^2}^2 \right)\r| dx \r|\\
+            \le\l|\int f(x) \l| 2\grkdem\left( x \right)  -  2\rfm\left( x \right) \r| dx \r|\\
+            +  \l|\int f(x) \l|\l\| \grkdem\r\|_{\hsig}^2 -  \l\| \rfm \r\|_{L^2}^2 \r| dx \r|.
+        \end{eqnarray*}
+        The second summand goes to zero by the inductive hypothesis. To take care of of the first summand
+        \begin{eqnarray*}
+            \l|\int f(x) \l| 2\grkdem\left( x \right)  -  2\rfm\left( x \right) \r| dx \r|\\
+            = \mathbb{E}_{X\sim f}\l[\l| 2\grkdem\left( X \right)  -  2\rfm\left( X \right) \r|\r]\\
+            = \mathbb{E}_{X\sim f}\l[\sqrt{ \l(2\grkdem\left( X \right)  -  2\rfm\left( X \right)\r)^2 }\r]\\
+            \le \sqrt{\mathbb{E}_{X\sim f}\l[ \l(2\grkdem\left( X \right)  -  2\rfm\left( X \right)\r)^2 \r]}\\
+            \le 2 \sqrt{ f(x)\l(\grkdem\left( x \right)  -  \rfm\left( x \right)\r)^2 }\\
+            \le 2 \sqrt{ \l\|f\r\|_\infty \l\| \grkdem - \rfm\r\|_2^2 }
+        \end{eqnarray*}
+        which goes to zero by the inductive hypothesis.
+
+        The convergence of (3) and (4) implies (1). (1) clearly implies (2) so we are done.
+    \end{proof}
+
+We define the following 
+\begin{eqnarray*}
+    N_{\sigma,n} \left( R^{-1}_{\sigma,n}\left( \gkde \right) \right) &\triangleq& \kde\\
+    N_{\sigma} \left( R^{-1}_{\sigma}\left( \gkde \right) \right) &\triangleq& \gkde\\
+    D_{\sigma,n} \left( R^{-1}_{\sigma,n}\left( \gkde \right) \right) &\triangleq& 1\\
+    D_{\sigma} \left( R^{-1}_{\sigma}\left( \gkde \right) \right) &\triangleq& 1.
+\end{eqnarray*}
+
+\begin{lem}
+    If $n\to 0$, with $\sigma \to 0$ and something with the rate of bandwitdh then for all $m\ge0$ we have,
+	\begin{eqnarray*}
+		\l\| \irwlm\left( \gkde \right)- \girwlm\left( \gkde \right)  \r\|\cip 0\\
+                \l\| N_{\sigma,n} \left( R^{m-1}_{\sigma,n}\left( \gkde \right) \right)- N_{\sigma}\left( R^{m-1}_{\sigma}\left( \gkde \right) \right)  \r\|\cip 0\\
+                \l| D_{\sigma,n} \left(  R^{m-1}_{\sigma,n}\left( \gkde \right) \right)- D_{\sigma}\left( R^{m-1}_{\sigma}\left( \gkde \right) \right)  \r|\cip 0.
+	\end{eqnarray*}
+\end{lem}
+\begin{proof}
+    We will proceed by induction. We have that the base case $m=0$ is trivial. For the inductive step, suppose the lemma statement holds for $m$. We will first prove the lemma for the last two limits and then use those to prove the first. First we will show that $\l\| N_{\sigma,n} \left( R_{\sigma,n}^m\left( \gkde \right) \right)- N_{\sigma}\left( R_{\sigma}^m \left( \gkde \right) \right)  \r\|\cip 0$. We can decompose this norm as
+    \begin{eqnarray*}
+        \l\| N_{\sigma,n} \left( R_{\sigma,n}^m\left( \gkde \right) \right)- N_{\sigma}\left( R_{\sigma}^m \left( \gkde \right) \right)  \r\|\\
+        \le \l\|N_{\sigma,n} \left( R_{\sigma,n}^m\left( \gkde \right) \right) - N_{\sigma,n} \left( R_\sigma^{m}\left( \gkde  \right)\r)  \r\| +\l\|N_{\sigma,n} \left( R_\sigma^{m}\left( \gkde  \right)\r)  - N_{\sigma}\left(R^m_\sigma \left( \gkde \right) \right) \r\|
+    \end{eqnarray*}
+        First we will demonstrate that the right summand goes to zero. To do this we will need the following lemma
+        \begin{lem}\label{lem:rsigminfbnd}
+            For all $l\ge 0$
+            \begin{eqnarray*}
+                \l\|R_\sigma^l\left( \gkde \right)\r\|_\infty < \infty.
+            \end{eqnarray*}
+        \end{lem}
+        \begin{proof}[Proof of Lemma \ref{lem:rsigminfbnd}]
+            Will proceed by induction. For the base case we have that $\l\|\gkde\r\|_\infty < \infty$ by assumption. Now let $R_{\sigma}^m \left( \gkde \right) = C < \infty$. We have the following
+            \begin{eqnarray*}
+                R_\sigma\l(R_{\sigma}^m\left( \gkde \right)\r)
+                &=& \frac{\int \fm\left( x \right)f(x)   \left( 2R_\sigma^m\l(\gkde\r)\left(x  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+ dx}{ \int f(y)   \left( 2R_\sigma^m\l(\gkde\r)\left(y  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+dy }.
+            \end{eqnarray*}
+            The denominator is just some positive value so it is sufficient to show that the numerator is bounded. With this in mind we have
+            \begin{eqnarray*}
+                \l\|\int \fm\left( x \right)f(x)   \left( 2R_\sigma^m\l(\gkde\r)\left(x  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+ dx\r\|_\infty
+                &=& \l\| k_\sigma \ast f(\cdot)   \left( 2R_\sigma^m\l(\gkde\r)\left(\cdot  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+ dx\r\|_\infty\\
+                &\le& \l\| f(\cdot)   \left( 2R_\sigma^m\l(\gkde\r)\left(\cdot  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+ \r\|_\infty\\
+                &\le& \l\|f\r\|_\infty \l\| \left( 2R_\sigma^m\l(\gkde\r)\left(\cdot  \right) - \l\|R_\sigma^m\left( \gkde \right)\r\|_\hsig^2  \right)^+ \r\|_\infty\\
+                &\le& \l\|f\r\|_\infty \l\|  2R_\sigma^m\l(\gkde\r)\left(\cdot  \right)    \r\|_\infty\\
+                &<& \infty ,
+            \end{eqnarray*}
+            and we are done.
+        \end{proof}
+        Returning to the right summand we have 
+	\begin{eqnarray*}
+		\l\|\frac{1}{n}\sum_{i=1}^n \fm(X_i) \l( 2\girwlm \left(\gkde  \right)\left( X_i \right) - \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r)^+ - \int_x \fm(x) \left( 2\girwlm \left(\gkde  \right)\left( x \right) - \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2 \right)^+ dx\r\|\\
+		=\l\|\frac{1}{n}\sum_{i=1}^n \fm(X_i) \l( 2\girwlm \left(\gkde  \right)\left( X_i \right) - \l\|\girwlm \left( \gkde \right)\r\|^2\r)^+ - \mathbb{E}\left[ \frac{1}{n}\sum_{i=1}^n \fm(X_i) \l( 2\girwlm \left(\gkde  \right)\left( X_i \right) - \l\|\girwlm \left( \gkde \right)\r\|^2\r)^+ \right]\r\|\\
+	\end{eqnarray*}
+	which goes to zero by standard kde convergence (NEED to show).
+	Now for the left hand side,
+	\begin{eqnarray*}
+		\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i) \l( 2\irwlm \left(\gkde  \right)\left( X_i \right) - \l\|\irwlm \left( \gkde \right)\r\|_\hsig^2\r)^+- \frac{1}{n}\sum_{i=1}^n \fm(X_i) \l( 2\girwlm \left(\gkde  \right)\left( X_i \right) - \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r)^+   \r\| \\
+		=\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l( \l( 2\irwlm \left(\gkde  \right)\left( X_i \right) - \l\|\irwlm \left( \gkde \right)\r\|_\hsig^2\r)^+- \l( 2\girwlm \left(\gkde  \right)\left( X_i \right) - \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r)^+\r)   \r\| \\
+		\le\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|  2\irwlm \left(\gkde  \right)\left( X_i \right) - \l\|\irwlm \left( \gkde \right)\r\|_\hsig^2-  2\girwlm \left(\gkde  \right)\left( X_i \right) + \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r|   \r\| \\
+		\le\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|  2\irwlm \left(\gkde  \right)\left( X_i \right) - \l\|\irwlm \left( \gkde \right)\r\|_\hsig^2-  2\girwlm \left(\gkde  \right)\left( X_i \right) + \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r|   \r\| \\
+		\le\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|  2\irwlm \left(\gkde  \right)\left( X_i \right) -  2\girwlm \left(\gkde  \right)\left( X_i \right) \r|   \r\| \\
+		+\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|   \l\|\irwlm \left( \gkde \right)\r\|_\hsig^2- \l\|\girwlm \left( \gkde \right)\r\|_\hsig^2\r|   \r\| 
+	\end{eqnarray*}
+	the second linek goes to zero by standard KDE consistency, now to the first line, we will remove the 2 factor for convience.
+	\begin{eqnarray*}
+		\l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|\irwlm \left(\gkde  \right)\left( X_i \right) - \girwlm \left(\gkde  \right)\left( X_i \right) \r|   \r\| \\
+		= \l\| \frac{1}{n}\sum_{i=1}^n \fm(X_i)\l|\l<\irwlm \left(\gkde  \right) - \girwlm \left(\gkde  \right), \fm(X_i) \r> \r|   \r\| \\
+		\le \max_{\delta\in \left\{ -1,1 \right\}^n}\l\|  \frac{1}{n}\sum_{i=1}^n \delta_i \fm(X_i)\l<\irwlm \left(\gkde  \right) - \girwlm \left(\gkde  \right), \fm(X_i) \r>    \r\| \\
+		\le \max_{\delta\in \left\{ -1,1 \right\}^n}\l\| \frac{1}{n} \sum_{i=1}^m \delta_i\fm\left( X_i \right)\l<\fm(X_i),\cdot \r> \r\|_{op} \l\|  \irwlm \left(\gkde  \right) - \girwlm \left(\gkde  \right)    \r\|.  \\
+	\end{eqnarray*}
+	The RHS of the last line goes to zero by the inductive hypothesis, now  we need only show that the LHS remains bounded whp.         Returning to our proof we have
+        \begin{eqnarray*}
+		 \max_{\delta\in \left\{ -1,1 \right\}^n}\l\| \frac{1}{n} \sum_{i=1}^m \delta_i\fm\left( X_i \right)\l<\fm(X_i),\cdot \r> \r\|_{op} \l\|  \irwlm \left(\gkde  \right) - \girwlm \left(\gkde  \right)    \r\|
+        \end{eqnarray*}
+        where the LHS goes to 1 and the RHS goes to zero thus completing the convergence of the numerator. Lets now take care of the denominator
+        \begin{eqnarray*}
+            \l| D_{\sigma,n} \left( R_{\sigma,n}^m\left( \gkde \right) \right)- D_{\sigma}\left( R_{\sigma}^m \left( \gkde \right) \right)  \r|\\
+            \le\l| D_{\sigma,n} \left( R_{\sigma,n}^m\left( \gkde \right) \right)- D_{\sigma,n}\left( R_{\sigma}^m \left( \gkde \right) \right)  \r|+ \l| D_{\sigma,n} \left( R_{\sigma}^m\left( \gkde \right) \right)- D_{\sigma}\left( R_{\sigma}^m \left( \gkde \right) \right)  \r|
+        \end{eqnarray*}
+        Lets take care of the first summand. From Proposition \ref{pro:big} we have
+        \begin{eqnarray*}
+             \l| \frac{1}{n} \sum_{i=1}^n\left( 2R_{\sigma,n}^m\left( \gkde \right)\left( X_i \right) - \l\|R_{\sigma,n}^m \left( \gkde \right)\r\|^2 \right)^+  -  \frac{1}{n} \sum_{j=1}^n\left( 2R_{\sigma}^m\left( \gkde \right)\left( X_j \right) - \l\|R_{\sigma}^m \left( \gkde \right)\r\|^2 \right)^+ \r|\\
+             \le \l|   \l\|R_{\sigma,n}^m \left( \gkde \right)\r\|^2 - \l\|R_{\sigma}^m \left( \gkde \right)\r\|^2 \r| +   2\l\|R_{\sigma,n}^m\left( \gkde \right) - R_{\sigma}^m\left( \gkde \right)\r\| \l\|\kde \r\|.
+        \end{eqnarray*}
+        The left summand goes to zero by the inductive hypotheseis and the RHS goes to zero by the inductive hypothesis and KDE consistency.
+        Note we now have that $D_{\sigma,n}\left( R_{\sigma,n}^m\left( \gkde \right) \right) \cip D\left(R^m\left( f \right) \right)$. Using this fact with the convergence of the numerator and the denominator completes the lemma.
+\end{proof}
+
+For the following lemma we define
+\begin{eqnarray*}
+    N_{\sigma,n}\left( R_{\sigma,n}^{-1}\left( \kde \right) \right) \triangleq \kde\\
+    D_{\sigma,n}\left( R_{\sigma,n}^{-1}\left( \kde \right) \right) \triangleq 1
+\end{eqnarray*}
+\begin{lem}
+	For all $m\ge 0$,we have
+	\begin{eqnarray*}
+		\l\|R_{\sigma,n}^m\left( \kde \right) - R_{\sigma,n}^m\left( \gkde \right)\r\| \cip 0 \\
+		\l\| N_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \kde \right) \right) - N_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \gkde \right) \right) \r\| \cip 0 \\
+		\l| D_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \kde \right) \right) - D_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \gkde \right) \right) \r| \cip 0 
+	\end{eqnarray*}
+\end{lem}
+\begin{proof}
+	The base case is trivial (NEED TO DO ANYWAYS). Suppose the lemma holds for $m$, we will show it holds for $m+1$. We will show the numerator and denominator converge separately. First the numerator.
+	\begin{eqnarray*}
+		\l\|N_{\sigma,n}\l(R_{\sigma,n}^{m}\left( \kde \right)\r) - N_{\sigma,n}\l(R_{\sigma,n}^{m}\left( \gkde \right)\r)\r\| \\
+		= \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\l[\left( 2R_{\sigma,n}^m\left( \kde \right)(X_i) - \l\| R_{\sigma,n}^m\left( \kde \right)\r\|^2_\hsig \right)^+   -  \left( 2R_{\sigma,n}^m\left( \gkde \right)(X_i) - \l\| R_{\sigma,n}^m\left( \gkde \right)\r\|^2_\hsig \right)^+    \r]\r\|\\
+		\le \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\left| 2R_{\sigma,n}^m\left( \kde \right)(X_i) - \l\| R_{\sigma,n}^m\left( \kde \right)\r\|^2_\hsig    -   2R_{\sigma,n}^m\left( \gkde \right)(X_i) + \l\| R_{\sigma,n}^m\left( \gkde \right)\r\|^2_\hsig \right|\r\|\\
+		\le \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\left| 2R_{\sigma,n}^m\left( \kde \right)(X_i)     -   2R_{\sigma,n}^m\left( \gkde \right)(X_i) \right|\r\|\\
+		 + \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\left| \l\| R_{\sigma,n}^m\left( \kde \right)\r\|^2_\hsig    - \l\| R_{\sigma,n}^m\left( \gkde \right)\r\|^2_\hsig \right|\r\|\\
+	\end{eqnarray*}
+	The second summand goes to zero by the inductive hypothesis and standard KDE consistency. Going to the first summand and removing a 2 factor for convencience 
+	\begin{eqnarray*}
+		 \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\left| R_{\sigma,n}^m\left( \kde \right)(X_i)     -   R_{\sigma,n}^m\left( \gkde \right)(X_i) \right|\r\|\\
+		 = \l\| \frac{1}{n}\sum_{i=1}^m \fm(X_i)\left| \l<R_{\sigma,n}^m\left( \kde \right) - R_{\sigma,n}^m\left( \gkde \right), \fm(X_i)\r> \right|\r\|\\
+                 =\max_{\delta\in\left\{ -1,1 \right\}^n} \l\| \frac{1}{n}\sum_{i=1}^m \delta_i \fm(X_i)\left[ \l<R_{\sigma,n}^m\left( \kde \right) - R_{\sigma,n}^m\left( \gkde \right), \fm(X_i)\r> \right]\r\|\\
+                 =\max_{\delta\in\left\{ -1,1 \right\}^n} \l\| \frac{1}{n}\sum_{i=1}^m \delta_i \fm(X_i) \l<R_{\sigma,n}^m\left( \kde \right) - R_{\sigma,n}^m\left( \gkde \right), \fm(X_i)\r> \r\|\\
+                 \le \max_{\delta\in\left\{ -1,1 \right\}^n} \l\| \frac{1}{n}\sum_{i=1}^m \delta_i \fm(X_i) \l<\cdot, \fm(X_i)\r> \r\|\l\| R_{\sigma,n}^m\left( \kde \right) - R_{\sigma,n}^m\left( \gkde \right)\r\| \\
+	\end{eqnarray*}
+	which goes to zero by uniform convergence when $n\sigma^{2d} \to 0$.
+
+       Now to take care of the denominator,
+        \begin{eqnarray*}
+		\l| D_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \kde \right) \right) - D_{\sigma,n}\left( R_{\sigma,n}^{m-1}\left( \gkde \right) \right) \r|  \\
+		= \l| \frac{1}{n}\sum_{i=1}^m \l[\left( 2R_{\sigma,n}^m\left( \kde \right)(X_i) - \l\| R_{\sigma,n}^m\left( \kde \right)\r\|^2_\hsig \right)^+   -  \left( 2R_{\sigma,n}^m\left( \gkde \right)(X_i) - \l\| R_{\sigma,n}^m\left( \gkde \right)\r\|^2_\hsig \right)^+    \r]\r|\\
+		  \left|  \l\| R_{\sigma,n}^m\left( \kde \right)\r\|^2_\hsig -  \l\| R_{\sigma,n}^m\left( \gkde \right)\r\|^2_\hsig \right|    + 2\l\|R_{\sigma,n}^m\left( \kde \right) -    R_{\sigma,n}^m\left( \gkde \right)\r\| \l\|\kde\r\| 
+        \end{eqnarray*}
+        which goes to zero in probability.
+\end{proof}
+
+
+\section{Auxiliary Results}
+\begin{lem}\label{lem:l2hsigbnd}
+	Let $g\in L^2\left( \rn^d \right)$, then $\l\|\int \fm(x) g(x) dx\r\|_\hsig \le \l\|g\r\|_{L^2}$.
+\end{lem}
+\begin{proof}[Proof of Lemma \ref{lem:l2hsigbnd}]
+	Using the Cauchy-Schwarz Inequality and Young's Inequality we have
+	\begin{eqnarray*}
+		\l\|\int \fm(x) g(x) dx\r\|_\hsig^2
+		&=&  \l<\int \fm(x) g(x) dx, \int \fm(y) g(y) dy\r>\\
+		&=&  \int g(x)g(y)\l< \fm(x)  , \int \fm(y) dy \r>dx\\
+		&=&  \int g(x)\l< \fm(x)  , \int \fm(y) g(y)dy \r>dx\\
+		&=&  \int g(x) (k_\sigma \ast g)(x) dx\\
+		&=& \l<g,g\ast k_\sigma\r>_{L^2}\\
+		&\le& \l\|g\r\|_{L^2} \l\| g \ast k_\sigma\r\|_{L^2}\\
+		&\le& \l\|g\r\|_{L^2} \l\| g  \r\|_{L^2} \l\|k_\sigma\r\|_{L^1}\\
+		&=& \l\|g\r\|_{L^2}^2.
+	\end{eqnarray*}
+\end{proof}
+\begin{lem}\label{lem:hilbabs}
+	Let $\alpha_1,\ldots,\alpha_m \in \rn$ and $x_1,\ldots,x_m \in \rn^d$, then 
+	\begin{eqnarray*}
+		\l\|\sum_{i=1}^m \alpha_i \fm\left( x_i \right)\r\| \le \l\|\sum_{i=1}^m \l|\alpha_i\r| \fm\left( x_i \right)\r\|,
+	\end{eqnarray*}
+	in both $\hsig$ and $L^2$ norms.
+\end{lem}
+
+\begin{proof}[Proof of Lemma \ref{lem:hilbabs}]
+	We have
+	\begin{eqnarray*}
+		\l\|\sum_{i=1}^m \alpha_i \fm\left( x_i \right)\r\|^2
+		&=& \sum_{i=1}^m \sum_{j=1^m} \alpha_i \alpha_j \l<\fm(x_i), \fm(x_j)\r>\\
+		       &\le& \sum_{i=1}^m \sum_{j=1^m} \l|\alpha_i\r| \l|\alpha_j\r| \l<\fm(x_i), \fm(x_j)\r>\\
+			      &=& \l\|\sum_{i=1}^m \l|\alpha_i\r| \fm\left( x_i \right)\r\|^2.
+	\end{eqnarray*}
+\end{proof}
+\begin{cor}\label{cor:hilbabs}
+	Let $f\in L^1\left( \rn^d \right)$, then 
+	\begin{eqnarray*}
+		\l\|\int_{\rn^d} f(x) \fm(x) dx\r\| \le\l\|\int_{\rn^d} \l|f(x)\r| \fm(x) dx\r\|,
+	\end{eqnarray*}
+	in both $\hsig$ and $L^2$ norms.
+\end{cor}
+\begin{proof}[Proof of Corollary \ref{cor:hilbabs}]
+	\begin{eqnarray*}
+		\l\|\int f(x) \fm(x) dx\r\|^2
+		&=& \l<\int f(x) \fm\left( x \right) dx , \int f(y) \fm \left( y \right) dy \r>\\
+		       &=& \int \int f(x) f(y)\l< \fm\left( x \right)  ,  \fm \left( y \right)  \r>dydx\\
+			      &\le& \int \int \l|f(x)\r| \l|f(y)\r|\l< \fm\left( x \right)  ,  \fm \left( y \right)  \r>dydx\\
+			      &=& \l<\int \l|f(x)\r| \fm\left( x \right) dx , \int \l|f(y)\r| \fm \left( y \right) dy \r>\\
+			      &=& \l\|\int \l|f(x)\r| \fm(x) dx\r\|^2
+	\end{eqnarray*}
+\end{proof}
+\begin{lem}\label{lem:hilbbigger}
+	Let $\alpha_1,\ldots,\alpha_m \ge 0$, $\beta_1,\ldots,\beta_m \in \rn$ such that $\beta_i \ge \alpha_i$ for all $i$ and $x_1,\ldots,x_m \in \rn^d$, then 
+	\begin{eqnarray*}
+		\l\|\sum_{i=1}^m \alpha_i \fm\left( x_i \right)\r\| \le \l\|\sum_{i=1}^m \beta_i \fm\left( x_i \right)\r\|,
+	\end{eqnarray*}
+	in both $\hsig$ and $L^2$ norms.
+\end{lem}
+\begin{proof}[Proof of Lemma \ref{lem:hilbbigger}]
+	This proof is similar to the proof of Lemma \ref{lem:hilbabs}, so we will omit it.
+\end{proof}
+\begin{cor}\label{cor:hilbbigger}
+	Let $0\le f\le g$. Then
+	\begin{eqnarray*}
+		\l\|\int f(x) \fm(x) dx\r\| \le \l\|\int g(x) \fm(x)dx\r\|,
+	\end{eqnarray*}
+	in both $\hsig$ and $L^2$ norms.
+\end{cor}
+\begin{proof}[Proof of Corollary \ref{cor:hilbbigger}]
+	\begin{eqnarray*}
+		\l\|\int f(x) \fm(x) dx\r\|^2
+		&=& \l<\int f(x) \fm\left( x \right) dx , \int f(y) \fm \left( y \right) dy \r>\\
+		       &=& \int \int f(x) f(y)\l< \fm\left( x \right)  ,  \fm \left( y \right)  \r>dydx\\
+			      &\le& \int \int g(x) g(y)\l< \fm\left( x \right)  ,  \fm \left( y \right)  \r>dydx\\
+			      &=& \l<\int g(x) \fm\left( x \right) dx , \int g(y) \fm \left( y \right) dy \r>\\
+			      &=& \l\|\int g(x) \fm(x) dx\r\|^2
+	\end{eqnarray*}
+\end{proof}
+\begin{lem}
+	Let $T_{\sigma,n} = \sum_{i=1}^m \fm\left( X_i \right)\l<\fm\left( X_i \right),\cdot\r>$ and $T_{\sigma,n} = \int \fm(x)\l<\fm(x),\cdot\r> f(x) dx$. We have that $\l\|T_{\sigma,n} - T_{\sigma,n}\r\| \cip 0$.
+\end{lem}
+
+
+The following is a classic result in functional analysis, but it is worth mentioning expliticly (Folland ?).
+\begin{prop}[Young's Inequality]\label{prop:young}
+	Let $1\le p,q,r \le \infty$ with $p^{-1} + q^{-1} = r^{-1} +1$. Let $g \in L^p\left( \rn^d \right)$ and $h \in L^q\left( \rn^d \right)$. We have
+	\begin{eqnarray*}
+		\l\|g\ast h \r\|_{L^r} \le \l\|g\r\|_{L^p} \l\|h\r\|_{L^q}.
+	\end{eqnarray*}
+\end{prop}
+We will find the case where $r=p=2$ and $q=1$ to be useful in particular. (MAYBE the infinity version too\dots)
+
+\begin{prop}[Folland]\label{prop:convcvg}
+	CONVOLUTION CONVERG
+\end{prop}
+
+\begin{lem}\label{lem:hsigl2normcvg}
+	Let $g\in L^2\l(\rn^d\r)$ then $\l\|\int \fm(x) g(x) dx \r\|_\hsig \to \l\|g\r\|_{L^2}$ as $\sigma \to 0$.
+\end{lem}
+
+\begin{proof}[Proof of Lemma \ref{lem:hsigl2normcvg}]
+	By direct evaluation we have
+	\begin{eqnarray*}
+		\l\|\int \fm(x) g(x) dx \r\|_\hsig^2
+		&=& \l< \int \fm(x) g(x) dx,\int \fm(y) g(y) dy\r>_\hsig\\
+		&=& \int \int g(x) g(y) \l<  \fm(x) , \fm(y) \r>_\hsig dx dy\\
+		&=& \int \int g(x) g(y) \ksig(x,y) dx dy\\
+		&=&  \int g(y) g\ast \ksig (y) dy \\
+		&=& \l< g, g\ast \ksig \r>_{L^2} \\
+	\end{eqnarray*}
+	which we know goes to $\l\|g\r\|_{L^2}^2$ by Proposition \ref{prop:convcvg}.
+\end{proof}
+
+We need a couple other technical results before moving forward.
+\begin{lem}\label{lem:fmconv}
+	Let $g \in L^2\left( \rn^d \right)$. Then $\int g(x) \fm(x) dx = g\ast \ksig$. DO WE NEED L1?
+\end{lem}
+\begin{proof}[Proof of Lemma \ref{lem:fmconv}]
+	Let $y \in \rn^d$ be arbitrary. By direct evaluation we get
+	\begin{eqnarray*}
+		\l(\int g(x) \fm(x) dx\r)(y)
+		&=&\l<\int g(x) \fm(x) dx, \fm\left( y \right)\r>_\hsig\\
+		&=&\int g(x)\l< \fm(x) , \fm\left( y \right)\r>_\hsig dx\\
+		&=&\int g(x) \ksig\left( x,y \right)dx\\
+		&=& g\ast\ksig\left( y \right).
+	\end{eqnarray*}
+\end{proof}
+\begin{lem}
+	\label{silly}
+	Let $f$ be a pdf, $\varepsilon>0$, and $y \in \rn^d$. There exists $r>0$ such that
+	\begin{eqnarray*}
+		\int_{B\l(y,r\r)} f(x) dx \ge 1-\varepsilon.
+	\end{eqnarray*}
+	or equivalently
+	\begin{eqnarray*}
+		\int_{B\l(y,r\r)^C} f(x) dx < \varepsilon.
+	\end{eqnarray*}
+\end{lem}
+\begin{proof}
+	We will prove the second statement. Consider the following, where $i\in \mathbb{N}$,
+	\begin{eqnarray*}
+		\int_{B\l(y,i\r)^C}f\l(x\r) dx
+		&= \int \chi_{B\l(y,i\r)^C}\l(x\r) f\l(x\r) dx.
+	\end{eqnarray*}
+	Clearly as $i \to \infty$, $\chi_{B\l(y,i\r)^C}f \to 0$ pointwise. Since $\chi_{B\l(y,i\r)^C}f$ is dominated by $f$, $\int \chi_{B\l(y,i\r)^C}\l(x\r) f\l(x\r) dx \to \int 0 dx=0$ by the dominated convergence theorem. Thus there exists $n\in\mathbb{N}$ where $\int_{B\l(y,n\r)^C}f\l(x\r) dx <\varepsilon$.
+\end{proof}
+\begin{lem}\label{hsl1}
+	Let $S \in \rn^d$ be a set with finite Lebesgue measure and $g \in \hsig$. Then
+	\begin{eqnarray*}
+		\int_S \l|g(x)\r| dx \le 2\sqrt{\lambda(S)} \l\|g\r\|_\hsig.
+	\end{eqnarray*}
+\end{lem}
+\begin{proof}{\bf of Lemma \ref{hsl1}}
+	Let $S^+ = \l\{s| s \in S,g(s)\ge0 \r\}$ and $S^- = S\setminus S^+$. We have
+	\begin{eqnarray}
+		\int_S \l|g(x)\r| dx \notag
+		&= \int_{S^+} g(x)dx +\int_{S^-}-g(x')dx'\\ \notag
+		&= \int_{S^+} \l<g,\Phi_\sigma(x)\r>_\hsig dx +\int_{S^-}\l<-g,\Phi_\sigma(x')\r>_\hsig dx'\\\notag
+		&=  \l<g,\int_{S^+}\Phi_\sigma(x)dx\r>_\hsig +\l<-g,\int_{S^-}\Phi_\sigma(x')dx'\r>_\hsig\\ 
+		&\le \l\| g \r\|_\hsig \l( \l\| \int_{S^+}\Phi_\sigma(x)dx \r\|_\hsig + \l\| \int_{S^-}\Phi_\sigma(x')dx' \r\|_\hsig \r) \label{dubnorm}.
+	\end{eqnarray}
+
+	Now consider
+	\begin{eqnarray*}
+		\l\| \int_{S^+}\Phi_\sigma(x)dx \r\|_\hsig^2
+		&= \l< \int_{S^+}\Phi_\sigma(x)dx,\int_{S^+}\Phi_\sigma(x')dx' \r>_\hsig\\
+		&= \int_{S^+}\int_{S^+} \l<\Phi_\sigma(x), \Phi_\sigma(x')\r>_\hsig dx dx'\\
+		&=\int_{S^+}\int_{S^+} k_\sigma\l(x,x'\r) dxdx'\\
+		&\le  \int_{S^+} 1 dx'\\
+		&= \lambda(S^+)
+	\end{eqnarray*}
+	and a similar result can be shown for $S^-$. Plugging back into (\ref{dubnorm}) we get
+	\begin{eqnarray*}
+		\int_S \l|g(x)\r| dx
+		&\le \l\| g \r\|_\hsig \l( \sqrt{\lambda\l(S^+\r)} + \sqrt{\lambda\l(S^-\r)} \r)\\
+		&\le \l\| g \r\|_\hsig 2\sqrt{\lambda\l(S\r)}.
+	\end{eqnarray*}
+\end{proof}
+
+\begin{lem}\label{lem:htol1cvg}
+	Let $f:\rn^d \to \rn$ be a pdf and $g_\sigma^n$ and $h_\sigma^n$ be sequences of (possibly random) densities in a sequence of spaces $\dsig$ (again $\sigma$ is implicitly a function of $n$). If $\l\|g_\sigma^n-f\r\|_1 \cip 0$ and $\l\|g_\sigma^n-h_\sigma^n\r\|_\hsig \cip 0$ then $\l\|g_\sigma^n-h_\sigma^n\r\|_1 \cip 0$ .
+\end{lem}
+\begin{proof}{\bf of Lemma \ref{lem:htol1cvg}}
+	Let $\varepsilon>0$; by Lemma \ref{silly} let $r>0$ such that $\l\| f\chi_{B(0,r)^C}\r\|_1 < \varepsilon/3$. From Lemma \ref{hsl1} we have
+	\begin{eqnarray*}
+		\l\|(g_\sigma^n- h_\sigma^n)\chi_{B(0,r)} \r\|_1 \cip 0.
+	\end{eqnarray*}
+	Since $\l\|g_\sigma^n -f \r\|_1 \cip 0$, we have $\l\|g_\sigma^n\chi_{B(0,r)}\r\|_1 \cip \l\|f\chi_{B(0,r)}\r\|_1$, and therefore
+	\begin{eqnarray*}
+		\biggl| \l\|h_\sigma^n \chi_{B\l(0,r\r)^C}\r\|_1 - \l\|f\chi_{B\l(0,r\r)^C} \r\|_1 \biggr|
+		&=\biggl|\l(1-\l\|h_\sigma^n\chi_{B(0,r)}\r\|_1\r) -\l( 1-\l\|f\chi_{B(0,r)}\r\|_1\r)\biggr|\\
+		&=\biggl|\l\|h_\sigma^n\chi_{B\l(0,r\r)}\r\|_1 - \l\|f\chi_{B\l(0,r\r)}\r\|_1\biggr|\\
+		&\le \l\|\l(h_\sigma^n -f \r) \chi_{B\l(0,r\r)}\r\|_1\\
+		&\le \l\|\l(h_\sigma^n-g_\sigma^n\r)\chi_{B\l(0,r\r)}\r\|_1+\l\|\l(g_\sigma^n-f\r)\chi_{B\l(0,r\r)}\r\|_1\\
+		&\cip 0.
+	\end{eqnarray*}
+	Thus, $\l\|h_\sigma^n\chi_{B\l(0,r\r)^C}\r\|_1 \cip \l\|f\chi_{B\l(0,r\r)^C}\r\|_1$.
+	Since $\l\|f\chi_{B(0,r)^C}\r\|_1 <\varepsilon/3$, we have
+	\begin{eqnarray}
+		\mathbb{P}\l( \l\|h_\sigma^n \chi_{B(0,r)^C}\r\|_1 \ge \varepsilon5/12 \r)\to 0\label{compbnd}.
+	\end{eqnarray}
+	Now to finish the proof,
+	\begin{eqnarray*}
+		\mathbb{P}\l(\l\| h_\sigma^n - g_\sigma^n \r\|_1> \varepsilon\r)
+		=& \mathbb{P}\l(   \l\|(h_\sigma^n- g_\sigma^n)\chi_{B(0,r)} \r\|_1+ \l\|\l(h_\sigma^n- g_\sigma^n\r)\chi_{B(0,r)^C} \r\|_1   > \varepsilon\r)\\
+		\le& \mathbb{P}\l(   \l\|\l(h_\sigma^n- g_\sigma^n\r)\chi_{B(0,r)} \r\|_1 \ge\varepsilon/4\r) + \mathbb{P}\l(   \l\|\l(h_\sigma^n- g_\sigma^n\r)\chi_{B(0,r)^C} \r\|_1   > 3\varepsilon/4\r)
+	\end{eqnarray*}
+	We've already shown the left summand goes to zero, now we take care of the right term 
+	\begin{eqnarray*}
+		\mathbb{P}\l(   \l\|\l(h_\sigma^n- g_\sigma^n\r)\chi_{B(0,r)^C} \r\|_1   > 3\varepsilon/4\r)
+		&\le \mathbb{P}\l(\l\|h_\sigma^n\chi_{B(0,r)^C}\r\|_1 +\l\|g_\sigma^n\chi_{B(0,r)^C}\r\|_1 >3\varepsilon/4\r)\\
+		&\le \mathbb{P}\l(  \l\|h_\sigma^n\chi_{B(0,r)^C}\r\|_1\ge5\varepsilon/12\r) +\mathbb{P}\l( \l\|g_\sigma^n\chi_{B(0,r)^C}\r\|_1>\varepsilon/3 \r)
+	\end{eqnarray*}
+	The left summand goes to zero by (\ref{compbnd}). Since $\l\|g_\sigma^n\chi_{B\l(0,r \r)^C}-f\chi_{B\l(0,r\r)^C}\r\|_1 \to 0$ and \newline $\l\|f\chi_{B\l(0,r\r)^C}\r\|_1 <\frac{\varepsilon}{3}$, with probability going to one, we have  $\l\|g_\sigma^n\chi_{B\l(0,r\r)^C}\r\|_1 \le \varepsilon/3$ and the right summand goes to zero. This completes our proof.
+\end{proof}
+
+\section{Basic Lemmas}
+\begin{lem}\label{lem:kdebiashsig}
+	If $n\to \infty$, $\sigma \to 0$ with  $n\sigma^d \to \infty$ then 
+	\begin{eqnarray*}
+		\l\|\kde - \gkde\r\|_\hsig \cip 0.
+	\end{eqnarray*}
+\end{lem}
+\begin{lem}\label{lem:kdel2}
+	If $n\to \infty$, $\sigma \to 0$ with  $n\sigma^d \to \infty$ then 
+	\begin{eqnarray*}
+		\l\|\kde -f \r\|_2 \cip 0
+	\end{eqnarray*}
+\end{lem}
+\appendix
+\section{Proofs}
+\begin{lem}\label{lem:rwd}
+	$R^{m}\left( f \right)$ exists for all $m\ge0$.
+\end{lem}
+\begin{proof}[Proof of Lemma \ref{lem:rwd}]
+	Clearly $\text{supp}\left( R^{m+1}\left( f \right) \right) \subseteq \text{supp}\left( R^m\left( f \right) \right)$. From H\"{o}lder's Inequality we have that
+	\begin{eqnarray*}
+		\l\|f\r\|_{\ld}^2 = \l\|ff\r\|_{L^1\left( \rn^d \right)} \le \l\|f\r\|_{L^1\left( \rn^d \right)}\l\|f\r\|_{L^\infty\left( \rn^d \right)} = \l\|f\r\|_{L^\infty\left( \rn^d \right)}
+	\end{eqnarray*}
+\end{proof}
+\begin{lem}\label{lem:irwlwd}
+	Let $g \in \dsign$. Then $\irwl\left( g \right)$ is well defined.
+\end{lem}
+
+\begin{proof}[Proof of Lemma \ref{lem:irwlwd}.]
+	To show that this is well defined we only need to show that $\left( 2g\left( X_i \right) - \l\|g\r\|_\hsig^2 \right)^+ >0$ for some $i$. Let $g = \sum_{i=1}^n w_i \fm\left( X_i \right)$. Let $q$ be such that $\sup_i g\l(X_i\r) = g\left( X_q \right)$. We have
+	\begin{eqnarray*}
+		g\left( X_q \right) 
+		&=&\sum_{i=1}^n w_i g\left( X_q \right)\\
+		&\ge&\sum_{i=1}^n w_i g\left( X_i \right)\\
+		&=&\sum_{i=1}^n w_i \l<\sum_{j=1}^n w_j \fm\left( X_j \right), \fm \left( X_i \right)\r>_\hsig \\
+		&=& \l<\sum_{j=1}^n w_j \fm\left( X_j \right), \sum_{i=1}^n w_i\fm \left( X_i \right)\r>_\hsig \\
+		&=& \l\|g\r\|^2_\hsig.
+	\end{eqnarray*}
+	We know $g\left( X_q \right) >0$ so $2g\left( X_i \right) - \l\|g\r\|_\hsig^2>0$.
+\end{proof}
+
+\bibliography{rvdm}
+\bibliographystyle{plain}
+\end{document}
